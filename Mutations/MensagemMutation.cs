@@ -8,23 +8,26 @@ namespace Fakezapp.Mutations
     [ExtendObjectType(OperationTypeNames.Mutation)]
     public class MensagemMutation
     {
-        private readonly IMensagensRepository _repository;
+        private readonly IConversasRepository _repository;
         private ITopicEventSender _eventSender;
 
-        public MensagemMutation(IMensagensRepository repository, ITopicEventSender eventSender)
+        public MensagemMutation(IConversasRepository repository, ITopicEventSender eventSender)
         {
             _repository = repository;
             _eventSender = eventSender;
         }
 
-        public bool SendMensagem(string texto, string sender, string? idConversa)
+        public bool SendMensagem(string texto, string sender, string idConversa)
         {
             Mensagem mensagem = new(texto, sender, DateTime.Now);
-            bool result = _repository.AddMensagem(mensagem);
+            bool result = _repository.AddMensagem(idConversa, mensagem);
 
             if (result == true)
             {
-                _eventSender.SendAsync(nameof(ConversaSubscription.ListenConversa), mensagem)
+                //_eventSender.SendAsync(nameof(ConversaSubscription.ListenConversa), mensagem)
+                //    .ConfigureAwait(false);
+
+                _eventSender.SendAsync(idConversa, mensagem)
                     .ConfigureAwait(false);
             }
 

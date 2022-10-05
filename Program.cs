@@ -7,29 +7,23 @@ using Fakezapp.Subscriptions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddSingleton<IMensagensRepository, MensagensRepository>();
+    .AddSingleton<IConversasRepository, ConversasRepository>();
 
 builder.Services
     .AddInMemorySubscriptions();
 
 builder.Services.AddGraphQLServer()
     .AddType<Mensagem>()
-    //.AddType<>()
+    .AddType<Conversa>()
 
     .AddQueryType()
         .AddTypeExtension<ConversaQuery>()
-    //    .AddTypeExtension<>()
-    //    .AddTypeExtension<>()
 
     .AddMutationType()
         .AddTypeExtension<MensagemMutation>()
-    //    .AddTypeExtension<>()
-    //    .AddTypeExtension<>()
 
     .AddSubscriptionType()
         .AddTypeExtension<ConversaSubscription>()
-    //    .AddTypeExtension<>()
-    //    .AddTypeExtension<>()
     ;
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>

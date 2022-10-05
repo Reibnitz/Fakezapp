@@ -6,16 +6,16 @@ namespace Fakezapp.Queries
     [ExtendObjectType(OperationTypeNames.Query)]
     public class ConversaQuery
     {
-        private readonly IMensagensRepository _repository;
+        private readonly IConversasRepository _repository;
 
-        public ConversaQuery(IMensagensRepository repository)
+        public ConversaQuery(IConversasRepository repository)
         {
             _repository = repository;
         }
 
-        public IEnumerable<Mensagem> GetConversa()
+        public IEnumerable<Mensagem> GetConversa(string idConversa)
         {
-            IEnumerable<Mensagem> mensagens = _repository.GetMensagens();
+            IEnumerable<Mensagem> mensagens = _repository.GetMensagens(idConversa);
             
             return mensagens;
         }

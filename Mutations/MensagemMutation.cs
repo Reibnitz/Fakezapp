@@ -24,8 +24,8 @@ namespace Fakezapp.Mutations
 
             if (result == true)
             {
-                //_eventSender.SendAsync(nameof(ConversaSubscription.ListenConversa), mensagem)
-                //    .ConfigureAwait(false);
+                _eventSender.SendAsync(nameof(ConversaSubscription.TodasConversas), mensagem)
+                    .ConfigureAwait(false);
 
                 _eventSender.SendAsync(idConversa, mensagem)
                     .ConfigureAwait(false);

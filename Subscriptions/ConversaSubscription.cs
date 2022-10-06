@@ -13,11 +13,11 @@ namespace Fakezapp.Subscriptions
             _repository = repository;
         }
 
-        //[Subscribe]
-        //public Mensagem ListenConversa([EventMessage] Mensagem mensagem)
-        //{
-        //    return mensagem;
-        //}
+        [Subscribe]
+        public Mensagem TodasConversas([EventMessage] Mensagem mensagem)
+        {
+            return mensagem;
+        }
 
         [Subscribe]
         public Mensagem ListenConversa([Topic] string idConversa, [EventMessage] Mensagem mensagem)

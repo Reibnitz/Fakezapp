@@ -1,4 +1,6 @@
-﻿namespace Fakezapp.Models
+﻿using HotChocolate.AspNetCore.Authorization;
+
+namespace Fakezapp.Models
 {
     public class Login
     {

@@ -34,7 +34,7 @@ namespace Fakezapp.Mutations
 
         public string UserLogin(Login login)
         {
-            var currentUser = Users.Where(_ => _.Email.ToLower() == login.Email.ToLower() &&
+            User? currentUser = Users.Where(_ => _.Email.ToLower() == login.Email.ToLower() &&
                         _.Password == login.Password).FirstOrDefault();
             if (currentUser != null)
             {
@@ -46,12 +46,14 @@ namespace Fakezapp.Mutations
                     audience: _tokenSettings.Value.Audience,
                     expires: DateTime.Now.AddMinutes(20),
                     signingCredentials: credentials
+                // claims: currentUser.Claims
                 );
 
-                return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+                string token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+                return token;
 
             }
-            return "";
+            return string.Empty;
         }
     }
 }

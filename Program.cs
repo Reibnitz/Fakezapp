@@ -14,12 +14,10 @@ builder.Services
     .AddSingleton<IConversasRepository, ConversasRepository>();
 
 builder.Services
-    .AddInMemorySubscriptions();
-
-builder.Services.AddGraphQLServer()
+    .AddGraphQLServer()
     .AddAuthorization()
-    .AddType<Mensagem>()
-    .AddType<Conversa>()
+    //.AddType<Mensagem>()
+    //.AddType<Conversa>()
 
     .AddQueryType()
         .AddTypeExtension<ConversaQuery>()
@@ -31,51 +29,53 @@ builder.Services.AddGraphQLServer()
 
     .AddSubscriptionType()
         .AddTypeExtension<ConversaSubscription>()
+
+    .AddInMemorySubscriptions()
+    .AddApolloTracing()
     ;
 
-builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
-
 builder.Services
-    .AddAuthorization()
+    .AddInMemorySubscriptions();
+
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+builder.Services.AddAuthorization();
+builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidIssuer = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Issuer"),
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration.GetSection("TokenSettings")
-                .GetValue<string>("Issuer"),
-            ValidAudience = builder.Configuration.GetSection("TokenSettings")
-                .GetValue<string>("Audience"),
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.
-                GetSection("TokenSettings").GetValue<string>("Key")))
+            ValidAudience = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Audience"),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("TokenSettings").GetValue<string>("Key"))),
         };
     });
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
 {
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-})
-);
+}));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors("CorsPolicy");
+    app.UseDeveloperExceptionPage();
 }
 
-//app.MapGraphQL();
+app.UseCors("CorsPolicy");
+app.UseHttpsRedirection();
+app.UseRouting();
 
-app.UseWebSockets() // Subscription
-    .UseRouting()
-    .UseEndpoints(endpoint => endpoint.MapGraphQL());
+app.UseWebSockets(); // Subscription
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(endpoint => endpoint.MapGraphQL());
 
 app.Run();
